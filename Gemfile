@@ -1,0 +1,12 @@
+source 'https://rubygems.org'
+
+gem 'bundler'
+gem 'rake'
+gem 'rspec'
+gem 'pry'
+gem 'redis'
+gem 'aws-sdk-core'
+gem 'avro'
+gem 'activesupport'
+gem 'gibbon'
+gem 'fakeredis'
