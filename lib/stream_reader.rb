@@ -1,8 +1,4 @@
-require 'logger'
-require 'aws-sdk-core'
-require 'active_support/notifications'
-require './lib/stream_reader/sequence_number_tracker'
-require './lib/stream_reader/avro_parser'
+require 'stream_helper'
 
 module StreamReader
   class << self
