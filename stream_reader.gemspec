@@ -4,12 +4,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require './lib/stream_reader/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'kinesis_stream_reader'
+  spec.name          = 'kinesis-stream-reader'
   spec.version       = StreamReader::VERSION
   spec.authors       = ['Justin-Holmes']
   spec.email         = ['justin.ryan.holmes@icloud.com']
 
-  spec.summary       = %q{Ruby interface for reading Kinesis streams}
+  spec.summary       = %q{Ruby interface for reading AWS Kinesis streams}
   spec.homepage      = 'https://github.com/ello/kinesis-stream-reader'
   spec.license       = 'MIT'
 

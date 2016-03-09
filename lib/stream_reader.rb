@@ -43,10 +43,10 @@ module StreamReader
 
           resp.records.each do |record|
             ActiveSupport::Notifications.instrument('stream_reader.process_record',
-              stream_name: @stream_name,
-              prefix: @prefix,
-              shard_id: shard_id,
-              ms_behind: resp.millis_behind_latest) do
+                                                    stream_name: @stream_name,
+                                                    prefix: @prefix,
+                                                    shard_id: shard_id,
+                                                    ms_behind: resp.millis_behind_latest) do
               AvroParser.new(record.data).each_with_schema_name(&block)
               @tracker.last_sequence_number = record.sequence_number
             end
@@ -69,8 +69,8 @@ module StreamReader
 
   def shard_id
     @shard_id ||= begin
-      resp = client.describe_stream(stream_name: @stream_name, limit: 1)
-      resp.stream_description.shards[0].shard_id
-    end
+                    resp = client.describe_stream(stream_name: @stream_name, limit: 1)
+                    resp.stream_description.shards[0].shard_id
+                  end
   end
 end
