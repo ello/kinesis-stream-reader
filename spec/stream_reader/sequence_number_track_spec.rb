@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/stream_reader/sequence_number_tracker'
 
 describe SequenceNumberTracker do
   let(:tracker) { described_class.new(key_prefix: 'test-key')}

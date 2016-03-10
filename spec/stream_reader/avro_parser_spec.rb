@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/stream_reader/avro_parser'
 
 describe AvroParser do
   let(:data) { File.read(File.join(File.dirname(__FILE__), '..', 'support', 'user_was_created.avro')) }

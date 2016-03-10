@@ -1,6 +1,6 @@
 require 'stream_helper'
 
-module StreamReader
+class StreamReader
   class << self
     def logger
       @logger ||= Logger.new(STDOUT)
