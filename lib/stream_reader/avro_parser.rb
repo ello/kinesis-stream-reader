@@ -12,7 +12,7 @@ class AvroParser
       if reader.datum_reader.readers_schema.class == Avro::Schema::RecordSchema
         schema_name = reader.datum_reader.readers_schema.name
       else
-        reader.datum_reader.readers_schema.schemas.last.name
+        schema_name = reader.datum_reader.readers_schema.schemas.last.name
       end
       yield record, schema_name
     end
