@@ -18,6 +18,8 @@ class StreamReader
   end
 
   def run!(&block)
+    LibratoReporter.run! if send_to_librato?
+
     # Locate a shard id to iterate through - we only have one for now
     loop do
       begin
@@ -72,5 +74,9 @@ class StreamReader
                     resp = client.describe_stream(stream_name: @stream_name, limit: 1)
                     resp.stream_description.shards[0].shard_id
                   end
+  end
+
+  def send_to_librato?
+    !!(ENV['LIBRATO_USER'] && ENV['LIBRATO_TOKEN'])
   end
 end

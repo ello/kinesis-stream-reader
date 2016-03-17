@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'aws-sdk-core', '~> 2.2.26'
   spec.add_dependency 'redis', '~> 3.2.2'
   spec.add_dependency 'activesupport'
+  spec.add_dependency 'librato-metrics'
 
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
