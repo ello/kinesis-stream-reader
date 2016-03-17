@@ -49,7 +49,7 @@ stream = StreamReader.new(
 )
 ```
 
-Run the stream reader. It will grab data matching the given `stream_name`:
+Run the stream reader. It will grab data matching the given `stream_name`, where `kind` is the name of the event/schema stored in Kinesis and `record` is the deserialized data:
  
 ```ruby
 stream.run! do |record, kind|
