@@ -15,13 +15,17 @@ class StreamReader
     @prefix      = prefix
     @tracker     = SequenceNumberTracker.new(key_prefix: [ stream_name, prefix ].compact.join('-'))
     @logger      = StreamReader.logger
+    trap('SIGTERM') { @stop_processing = true; puts 'Exiting...' }
   end
+
+  attr_reader :stop_processing
 
   def run!(&block)
     LibratoReporter.run! if send_to_librato?
 
     # Locate a shard id to iterate through - we only have one for now
     loop do
+      break if stop_processing
       begin
         iterator_opts = { stream_name: @stream_name, shard_id: shard_id }
         if seq = @tracker.last_sequence_number
@@ -36,6 +40,7 @@ class StreamReader
 
         # Iterate!
         loop do
+          break if stop_processing
           sleep 1
           @logger.debug "Getting records for #{shard_iterator}"
           resp = client.get_records({
