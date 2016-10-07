@@ -8,7 +8,7 @@ class StreamReader
   end
 
   # Assume only one shard for now
-  BATCH_SIZE = 10
+  DEFAULT_BATCH_SIZE = 100
 
   def initialize(stream_name:, prefix: '')
     @stream_name = stream_name
@@ -20,7 +20,7 @@ class StreamReader
 
   attr_reader :stop_processing
 
-  def run!(&block)
+  def run!(batch_size: DEFAULT_BATCH_SIZE, &block)
     LibratoReporter.run! if send_to_librato?
 
     # Locate a shard id to iterate through - we only have one for now
@@ -45,7 +45,7 @@ class StreamReader
           @logger.debug "Getting records for #{shard_iterator}"
           resp = client.get_records({
             shard_iterator: shard_iterator,
-            limit: BATCH_SIZE,
+            limit: batch_size,
           })
 
           resp.records.each do |record|
