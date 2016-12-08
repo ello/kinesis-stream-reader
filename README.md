@@ -57,6 +57,14 @@ stream.run! do |record, kind|
 end
 ```
 
+As of version 0.2.0, a stream with multiple shards will have a thread spawned per-shard to process the records from that shard. You should ensure that whatever happens in your processing block is thread-safe, particularly as it pertains to using external resources. For instance, you'll likely want to use `ActiveRecord::Base.with_connection` to wrap any database calls.
+
+
+## Upgrading 
+Version 0.2.0 introduced a threading model for spawning multiple readers to service streams with more than one shard. As a result of that change, the sequence number tracker key structure changed as well, to be able to track the position of a reader for each shard. When upgrading, you'll need to do one of two things:
+
+- If your processing blocks are idempotent and fast, you can simply do nothing and let the processors re-process old data starting from the `TRIM_HORIZON`.
+- Otherwise, you can manually obtain the `shard_id` value from a `DescribeStream` call and move the value of the last processed sequence number to a new key in Redis. You'll need to stop your workers while doing this. This will avoid re-processing the same records multiple times.
 
 ## Contributing
 Bug reports and pull requests are welcome on GitHub at https://github.com/ello/kinesis-stream-reader.
