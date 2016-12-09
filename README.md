@@ -70,7 +70,7 @@ Version 0.2.0 introduced a threading model for spawning multiple readers to serv
 Bug reports and pull requests are welcome on GitHub at https://github.com/ello/kinesis-stream-reader.
 
 ## License
-Streams is released under the [MIT License](/LICENSE.txt)
+Released under the [MIT License](/LICENSE.txt)
 
 ## Code of Conduct
 Ello was created by idealists who believe that the essential nature of all human beings is to be kind, considerate, helpful, intelligent, responsible, and respectful of others. To that end, we will be enforcing [the Ello rules](https://ello.co/wtf/policies/rules/) within all of our open source projects. If you don’t follow the rules, you risk being ignored, banned, or reported for abuse.
