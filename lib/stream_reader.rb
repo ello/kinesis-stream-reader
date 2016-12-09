@@ -22,7 +22,7 @@ class StreamReader
     end
   end
 
-  def run!(batch_size: DEFAULT_BATCH_SIZE, &block)
+  def run!(batch_size: DEFAULT_BATCH_SIZE, join: true, &block)
     LibratoReporter.run! if send_to_librato?
 
     @runners = []
@@ -30,7 +30,7 @@ class StreamReader
       @runners << spawn_reader_for_shard(shard_id, batch_size, &block)
     end
 
-    @runners.map(&:join) # force main process to wait when run
+    @runners.map(&:join) if join
   end
 
   def stop!

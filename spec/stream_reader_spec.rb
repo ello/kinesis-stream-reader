@@ -22,7 +22,7 @@ describe StreamReader do
     it 'starts and stops gracefully' do
       stub_processor = double
       expect(stub_processor).to receive(:process).at_least(:once)
-      reader.run! { |record| stub_processor.process }
+      reader.run!(join: false) { |record| stub_processor.process }
       sleep 3
       reader.stop!
     end
