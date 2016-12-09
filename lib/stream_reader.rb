@@ -29,6 +29,8 @@ class StreamReader
     each_shard do |shard_id|
       @runners << spawn_reader_for_shard(shard_id, batch_size, &block)
     end
+
+    @runners.map(&:join) # force main process to wait when run
   end
 
   def stop!
