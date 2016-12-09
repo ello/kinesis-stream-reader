@@ -45,6 +45,7 @@ class ShardReader
             @logger.debug "Getting records for #{shard_iterator}"
             resp = @client.get_records(shard_iterator: shard_iterator,
                                        limit: @batch_size)
+            @logger.info "This batch is #{resp.millis_behind_latest} behind the latest"
 
             resp.records.each do |record|
               process_record(record, resp, &block)
