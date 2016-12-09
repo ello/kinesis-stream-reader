@@ -61,7 +61,7 @@ class ShardReader
   end
 
   def join
-    @thread.join
+    @thread.join if @thread
   end
 
   def stop_processing!
