@@ -37,15 +37,18 @@ class ShardReader
 
           resp = @client.get_shard_iterator(iterator_opts)
           shard_iterator = resp.shard_iterator
+          last_fetch = Time.now
 
           # Iterate!
           loop do
             break if @stop_processing
-            sleep 1
+            # Back off for 1 sec if we're fetching too quickly
+            sleep 1 if (Time.now - last_fetch) < 1.0
             @logger.debug "Getting records for #{shard_iterator}"
             resp = @client.get_records(shard_iterator: shard_iterator,
                                        limit: @batch_size)
-            @logger.info "This batch is #{resp.millis_behind_latest} behind the latest"
+            @logger.info "This batch is #{resp.millis_behind_latest}ms behind the latest"
+            last_fetch = Time.now
 
             resp.records.each do |record|
               process_record(record, resp, &block)
