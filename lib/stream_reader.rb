@@ -16,6 +16,10 @@ class StreamReader
     @prefix      = prefix
     @logger      = StreamReader.logger
     @client      = client
+
+    # Threads raise exceptions to main process immediately, not on join.
+    Thread.abort_on_exception=true
+
     trap('SIGTERM') do
       puts 'Caught SIGTERM, exiting...'
       stop!
@@ -31,6 +35,12 @@ class StreamReader
     end
 
     @runners.map(&:join) if join
+  rescue => e
+    #  If a thread throws an exception gracefully shut down all threads
+    stop!
+
+    # Now re-raise, stopping process (or getting caught in implementation)
+    raise e
   end
 
   def stop!
