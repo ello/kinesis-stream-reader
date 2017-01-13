@@ -76,7 +76,7 @@ class ShardReader
   def process_record(record, resp, &block)
     instrument_opts = {
       stream_name: @stream_name,
-      prefix: @prefix,
+      prefix: @tracker_prefix,
       shard_id: @shard_id,
       ms_behind: resp.millis_behind_latest
     }
