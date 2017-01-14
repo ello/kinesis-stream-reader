@@ -4,8 +4,11 @@ module LibratoReporter
   class << self
     def run!
       @client = Librato::Metrics::Client.new
-      @client.authenticate(ENV['LIBRATO_USER'], ENV['LIBRATO_TOKEN'])
-      @queue = Librato::Metrics::Queue.new(autosubmit_interval: 10, client: @client)
+      @client.authenticate(ENV['LIBRATO_USER'],
+                           ENV['LIBRATO_TOKEN'])
+      autosubmit_interval = Integer(ENV['LIBRATO_AUTOSUBMIT_INTERVAL'] || 30)
+      @queue = Librato::Metrics::Queue.new(autosubmit_interval: autosubmit_interval,
+                                           client: @client)
       add_listeners
     end
 
