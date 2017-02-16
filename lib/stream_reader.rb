@@ -4,7 +4,11 @@ require 'shard_reader'
 class StreamReader
   class << self
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Logger.new($stdout).tap do |l|
+        $stdout.sync = true
+        l.level = ENV['LOG_LEVEL'] ? ENV['LOG_LEVEL'].downcase.to_sym : :info
+        l.progname = 'stream_reader'
+      end
     end
   end
 
@@ -39,7 +43,7 @@ class StreamReader
     @logger.error "Caught exception: #{e}"
     # Prevent an infinite loop if another exception is triggered exiting another thread
     unless @exiting
-      @logger.error "Stopping shard readers..."
+      @logger.info "Stopping shard readers..."
       @exiting = true
       stop!
     end

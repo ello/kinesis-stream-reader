@@ -22,7 +22,7 @@ class ShardReader
 
   def run(&block)
     @thread = Thread.new do
-      @logger.debug "Spawned shard reader for #{@stream_name}/#{@shard_id}"
+      @logger.info "Spawned shard reader for #{@stream_name}/#{@shard_id}"
       loop do
         break if @stop_processing
         begin
@@ -45,10 +45,10 @@ class ShardReader
             break if @stop_processing
             # Back off for 1 sec if we're fetching too quickly
             sleep 1 if (Time.now - last_fetch) < 1.0
-            @logger.debug "Getting records for #{shard_iterator}"
+            @logger.info "Getting records for #{shard_iterator}"
             resp = @client.get_records(shard_iterator: shard_iterator,
                                        limit: @batch_size)
-            @logger.info "This batch is #{resp.millis_behind_latest}ms behind the latest"
+            @logger.info "Batch is #{resp.millis_behind_latest}ms behind the latest"
             last_fetch = Time.now
 
             resp.records.each do |record|
@@ -61,7 +61,7 @@ class ShardReader
           @logger.debug "Iterator expired! Fetching a new one."
         end
       end
-      @logger.debug "Shard reader for #{@stream_name}/#{@shard_id} exiting"
+      @logger.info "Shard reader for #{@stream_name}/#{@shard_id} exiting"
     end
   end
 
