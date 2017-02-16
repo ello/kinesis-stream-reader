@@ -18,7 +18,7 @@ class StreamReader
     @client      = client
 
     # Threads raise exceptions to main process immediately, not on join.
-    Thread.abort_on_exception=true
+    Thread.abort_on_exception = true
 
     trap('SIGTERM') do
       puts 'Caught SIGTERM, exiting...'
@@ -34,18 +34,26 @@ class StreamReader
       @runners << spawn_reader_for_shard(shard_id, batch_size, &block)
     end
 
-    @runners.map(&:join) if join
+    join! if join
   rescue => e
-    #  If a thread throws an exception gracefully shut down all threads
-    stop!
-
+    @logger.error "Caught exception: #{e}"
+    # Prevent an infinite loop if another exception is triggered exiting another thread
+    unless @exiting
+      @logger.error "Stopping shard readers..."
+      @exiting = true
+      stop!
+    end
     # Now re-raise, stopping process (or getting caught in implementation)
     raise e
   end
 
+  def join!
+    @runners.map(&:join)
+  end
+
   def stop!
     @runners.map(&:stop_processing!)
-    @runners.map(&:join)
+    join!
   end
 
   private

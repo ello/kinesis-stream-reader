@@ -22,6 +22,7 @@ class ShardReader
 
   def run(&block)
     @thread = Thread.new do
+      @logger.debug "Spawned shard reader for #{@stream_name}/#{@shard_id}"
       loop do
         break if @stop_processing
         begin
@@ -60,6 +61,7 @@ class ShardReader
           @logger.debug "Iterator expired! Fetching a new one."
         end
       end
+      @logger.debug "Shard reader for #{@stream_name}/#{@shard_id} exiting"
     end
   end
 
