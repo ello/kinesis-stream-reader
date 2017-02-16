@@ -10,7 +10,7 @@ class ShardReader
     @tracker_prefix = tracker_prefix
     @shard_id = shard_id
     @batch_size = batch_size
-    @logger = logger
+    @logger = logger.dup.tap { |l| l.progname = "ShardReader[#{@stream_name},#{@shard_id}]" }
     @client = client
     @stop_processing = false
 
@@ -22,7 +22,7 @@ class ShardReader
 
   def run(&block)
     @thread = Thread.new do
-      @logger.info "Spawned shard reader for #{@stream_name}/#{@shard_id}"
+      @logger.info "Spawned shard reader thread"
       loop do
         break if @stop_processing
         begin
@@ -34,7 +34,7 @@ class ShardReader
           else
             iterator_opts[:shard_iterator_type] = 'TRIM_HORIZON'
           end
-          @logger.debug "Getting shard iterator for #{@stream_name} / #{@shard_id} / #{seq}"
+          @logger.info "Getting shard iterator for seq #{seq}"
 
           resp = @client.get_shard_iterator(iterator_opts)
           shard_iterator = resp.shard_iterator
@@ -45,10 +45,9 @@ class ShardReader
             break if @stop_processing
             # Back off for 1 sec if we're fetching too quickly
             sleep 1 if (Time.now - last_fetch) < 1.0
-            @logger.info "Getting records for #{shard_iterator}"
             resp = @client.get_records(shard_iterator: shard_iterator,
                                        limit: @batch_size)
-            @logger.info "Batch is #{resp.millis_behind_latest}ms behind the latest"
+            @logger.info "Got batch of #{resp.records.size} records, #{resp.millis_behind_latest}ms behind latest"
             last_fetch = Time.now
 
             resp.records.each do |record|
@@ -61,7 +60,7 @@ class ShardReader
           @logger.debug "Iterator expired! Fetching a new one."
         end
       end
-      @logger.info "Shard reader for #{@stream_name}/#{@shard_id} exiting"
+      @logger.info "Shard reader thread exiting"
     end
   end
 

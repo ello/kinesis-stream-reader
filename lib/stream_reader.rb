@@ -7,7 +7,7 @@ class StreamReader
       @logger ||= Logger.new($stdout).tap do |l|
         $stdout.sync = true
         l.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
-        l.progname = 'stream_reader'
+        l.progname = 'StreamReader'
       end
     end
   end
@@ -32,6 +32,7 @@ class StreamReader
 
   def run!(batch_size: DEFAULT_BATCH_SIZE, join: true, &block)
     LibratoReporter.run! if send_to_librato?
+    @logger.info "Starting reader threads"
 
     @runners = []
     each_shard do |shard_id|
@@ -56,6 +57,7 @@ class StreamReader
   end
 
   def stop!
+    @logger.info "Stopping reader threads"
     @runners.map(&:stop_processing!)
     join!
   end
