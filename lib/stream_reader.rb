@@ -6,7 +6,7 @@ class StreamReader
     def logger
       @logger ||= Logger.new($stdout).tap do |l|
         $stdout.sync = true
-        l.level = ENV['LOG_LEVEL'] ? ENV['LOG_LEVEL'].downcase.to_sym : :info
+        l.level = Logger.const_get((ENV['LOG_LEVEL'] || 'info').upcase)
         l.progname = 'stream_reader'
       end
     end
