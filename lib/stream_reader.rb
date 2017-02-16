@@ -30,13 +30,13 @@ class StreamReader
     end
   end
 
-  def run!(batch_size: DEFAULT_BATCH_SIZE, join: true, &block)
+  def run!(join: true, &block)
     LibratoReporter.run! if send_to_librato?
     @logger.info "Starting reader threads"
 
     @runners = []
     each_shard do |shard_id|
-      @runners << spawn_reader_for_shard(shard_id, batch_size, &block)
+      @runners << spawn_reader_for_shard(shard_id, &block)
     end
 
     join! if join
@@ -64,7 +64,7 @@ class StreamReader
 
   private
 
-  def spawn_reader_for_shard(shard_id, batch_size, &block)
+  def spawn_reader_for_shard(shard_id, &block)
     ShardReader.new(stream_name: @stream_name,
                     tracker_prefix: @prefix,
                     shard_id: shard_id,
@@ -82,5 +82,9 @@ class StreamReader
 
   def send_to_librato?
     !!(ENV['LIBRATO_USER'] && ENV['LIBRATO_TOKEN'])
+  end
+
+  def batch_size
+    Integer(ENV['CONSUMER_BATCH_SIZE'] || DEFAULT_BATCH_SIZE)
   end
 end
