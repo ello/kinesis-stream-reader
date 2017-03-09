@@ -38,6 +38,7 @@ class ShardReader
 
           resp = @client.get_shard_iterator(iterator_opts)
           shard_iterator = resp.shard_iterator
+          exit_thread if shard_iterator.nil?
           last_fetch = Time.now
 
           # Iterate!
@@ -54,6 +55,7 @@ class ShardReader
               process_record(record, resp, &block)
             end
             shard_iterator = resp.next_shard_iterator
+            exit_thread if shard_iterator.nil?
           end
 
         rescue Aws::Kinesis::Errors::ExpiredIteratorException
@@ -73,6 +75,12 @@ class ShardReader
   end
 
   private
+
+  def exit_thread
+    @logger.info "A shard split or merge has occured and this shard is now in a CLOSED state.
+                            All available data records have been read. Exiting!"
+    @thread.exit
+  end
 
   def process_record(record, resp, &block)
     instrument_opts = {
