@@ -1,8 +1,9 @@
 require 'avro'
 
 class AvroParser
-  def initialize(data)
+  def initialize(data, seq_number)
     @data = data
+    @seq_number = seq_number
   end
 
   def each_with_schema_name
@@ -14,7 +15,7 @@ class AvroParser
       else
         schema_name = reader.datum_reader.readers_schema.schemas.last.name
       end
-      yield record, schema_name
+      yield record, { schema_name: schema_name, raw_data: buffer.string, sequence_number: @seq_number }
     end
   end
 end

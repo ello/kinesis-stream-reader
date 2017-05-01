@@ -3,11 +3,14 @@ require_relative '../../lib/stream_reader/avro_parser'
 
 describe AvroParser do
   let(:data) { File.read(File.join(File.dirname(__FILE__), '..', 'support', 'user_was_created.avro')) }
-  let(:parser) { described_class.new(data) }
+  let(:seq_number) { 'asdf123' }
+  let(:parser) { described_class.new(data, seq_number) }
 
   it 'parses an Avro message' do
-    parser.each_with_schema_name do |record, schema_name|
-      expect(schema_name).to eq('UserWasCreated')
+    parser.each_with_schema_name do |record, opts|
+      expect(opts[:schema_name]).to eq('UserWasCreated')
+      expect(opts[:seq_number]).to eq seq_number
+      expect(opts[:raw_data]).to eq data
       expect(record).to eq({
         "id"=>"1",
         "username"=>"hello",
