@@ -1,4 +1,5 @@
 require 'librato/metrics'
+require 'thread'
 
 module LibratoReporter
   class << self
@@ -11,6 +12,7 @@ module LibratoReporter
       @aggregator = Librato::Metrics::Aggregator.new(autosubmit_interval: autosubmit_interval,
                                                      autosubmit_count: autosubmit_count,
                                                      client: @client)
+      @mutex = Mutex.new
       add_listeners
     end
 
@@ -18,12 +20,14 @@ module LibratoReporter
 
     def add_listeners
       ActiveSupport::Notifications.subscribe('stream_reader.process_record') do |name, start, finish, id, payload|
-        @aggregator.add "#{name}.duration": {
-          value: (finish - start),
-          source: "#{payload[:stream_name]}:#{payload[:prefix]}:#{payload[:shard_id]}" },
-          "#{name}.latency": {
-          value: payload[:ms_behind],
-          source: "#{payload[:stream_name]}:#{payload[:prefix]}:#{payload[:shard_id]}" }
+        @mutex.synchronize do
+          @aggregator.add "#{name}.duration": {
+            value: (finish - start),
+            source: "#{payload[:stream_name]}:#{payload[:prefix]}:#{payload[:shard_id]}" },
+            "#{name}.latency": {
+            value: payload[:ms_behind],
+            source: "#{payload[:stream_name]}:#{payload[:prefix]}:#{payload[:shard_id]}" }
+        end
       end
     end
   end
