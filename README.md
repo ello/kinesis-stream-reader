@@ -49,13 +49,18 @@ stream = StreamReader.new(
 )
 ```
 
-Run the stream reader. It will grab data matching the given `stream_name`, where `kind` is the name of the event/schema stored in Kinesis and `record` is the deserialized data:
- 
+Run the stream reader.
 ```ruby
-stream.run! do |record, kind|
-  DoSomethingFromStream.perform(record: record, kind: kind)
+stream.run! do |record, opts|
+  DoSomethingFromStream.perform(record: record, kind: opts[:schema_name])
 end
 ```
+It will grab data matching the given `stream_name`, where `record` is the parsed data and `opts` is a hash containing:
+* `schema_name` - the name of the event/schema stored in Kinesis
+* `raw_data` - the raw, unparsed avro data
+* `sequence_number` - the sequence number of the Kinesis event
+* `shard_id` - the shard_id that the event is being processed on
+
 
 As of version 0.2.0, a stream with multiple shards will have a thread spawned per-shard to process the records from that shard. You should ensure that whatever happens in your processing block is thread-safe, particularly as it pertains to using external resources. For instance, you'll likely want to use `ActiveRecord::Base.with_connection` to wrap any database calls.
 

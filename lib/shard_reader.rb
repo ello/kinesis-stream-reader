@@ -91,7 +91,7 @@ class ShardReader
     }
     ActiveSupport::Notifications.instrument('stream_reader.process_record',
                                             instrument_opts) do
-      AvroParser.new(record.data).each_with_schema_name(&block)
+      AvroParser.new(record.data, record.sequence_number, @shard_id).each_with_schema_name(&block)
       @tracker.last_sequence_number = record.sequence_number
     end
   end
