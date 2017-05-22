@@ -71,6 +71,9 @@ Version 0.2.0 introduced a threading model for spawning multiple readers to serv
 - If your processing blocks are idempotent and fast, you can simply do nothing and let the processors re-process old data starting from the `TRIM_HORIZON`.
 - Otherwise, you can manually obtain the `shard_id` value from a `DescribeStream` call and move the value of the last processed sequence number to a new key in Redis. You'll need to stop your workers while doing this. This will avoid re-processing the same records multiple times.
 
+### Librato Telemetry
+If you specify the `LIBRATO_USER` and `LIBRATO_TOKEN` environment variables, shard processor stats will be periodically reported to Librato (with the metrics `stream_reader.process_record.duration` and `stream_reader.process_record.latency` and a custom source that identifies the prefix and shard id). It is highly recommended that you monitor at least the latency metric to ensure that your processors do not fall so far behind that data is [dropped from the stream](http://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html) before it can be processed. If you monitor that metric, you should also have a "dead man's switch"-type metric that alerts if it stops reporting.
+
 ## Contributing
 Bug reports and pull requests are welcome on GitHub at https://github.com/ello/kinesis-stream-reader.
 
