@@ -4,6 +4,7 @@ Changelog
 HEAD
 ------------------
 * Bugfix - Fix an issue where metric assignments on different threads were erroring when submitting to Librato (https://github.com/ello/kinesis-stream-reader/pull/18)
+* Bugfix - Don't attempt to fire up Librato when credentials are not specified
 
 0.3.0 (2017-05-05)
 ------------------

@@ -4,6 +4,7 @@ require 'thread'
 module LibratoReporter
   class << self
     def run!
+      return unless config_present?
       @client = Librato::Metrics::Client.new
       @client.authenticate(ENV['LIBRATO_USER'],
                            ENV['LIBRATO_TOKEN'])
@@ -17,6 +18,13 @@ module LibratoReporter
     end
 
     private
+
+    def config_present?
+      !(ENV['LIBRATO_USER'].nil?) &&
+        !(ENV['LIBRATO_USER'].empty?) &&
+        !(ENV['LIBRATO_TOKEN'].nil?) &&
+        !(ENV['LIBRATO_TOKEN'].empty?)
+    end
 
     def add_listeners
       ActiveSupport::Notifications.subscribe('stream_reader.process_record') do |name, start, finish, id, payload|
