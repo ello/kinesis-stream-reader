@@ -2,6 +2,8 @@ require 'spec_helper'
 require_relative '../lib/stream_reader'
 require 'logger'
 
+class TestError < StandardError; end
+
 describe StreamReader do
   it 'has a logger' do
     expect(described_class.logger).to be_a(Logger)
@@ -28,7 +30,7 @@ describe StreamReader do
     end
 
     it 'handles errors gracefully' do
-      expect { reader.run!(join: true) { |record| raise ArgumentError } }.to raise_error(ArgumentError)
+      expect { reader.run! { raise TestError } }.to raise_error(TestError)
     end
   end
 end
