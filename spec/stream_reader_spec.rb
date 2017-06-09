@@ -23,12 +23,12 @@ describe StreamReader do
       stub_processor = double
       expect(stub_processor).to receive(:process).twice
       reader.run!(join: false) { |record| stub_processor.process }
-      sleep 1
+      sleep 0.5
       reader.stop!
     end
 
     it 'handles errors gracefully' do
-      expect { reader.run! { |record| raise 'boom' } }.to raise_error(StandardError)
+      expect { reader.run!(join: true) { |record| raise ArgumentError } }.to raise_error(ArgumentError)
     end
   end
 end

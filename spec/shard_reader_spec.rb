@@ -17,7 +17,7 @@ describe ShardReader do
       stub_processor = double
       expect(stub_processor).to receive(:process).at_least(:once)
       reader.run { |record| stub_processor.process }
-      sleep 3
+      sleep 0.5
       reader.stop_processing!
       reader.join
     end

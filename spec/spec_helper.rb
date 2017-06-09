@@ -57,6 +57,15 @@ Aws.config[:kinesis] = {
   }
 }
 
+unless ENV['DEBUG']
+  require 'stream_reader'
+  StreamReader.instance_eval do
+    @logger = Logger.new(nil)
+  end
+end
+
 RSpec.configure do |config|
+  srand(Time.now.to_i)
   config.color = true
+  config.seed ||= rand(1024)
 end
