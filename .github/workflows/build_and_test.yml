@@ -1,0 +1,23 @@
+name: Tests
+
+on: [push] # without pull_request for the moment
+
+jobs:
+  build:
+    name: 'ruby-2.7)'
+    # skip on [ci skip] and do not run 2 on push and interal PR
+    if: (contains(github.event.commits[0].message, '[ci skip]') == false) &&  (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.4
+          bundler-cache: true
+
+      - name: Run specs
+        run: |
+          bundle exec rake
